@@ -1,6 +1,5 @@
-
 const baseurl =
-    'https://crudcrud.com/api/085f0816fd0042cc9657d2cc2478ee74/tasks';
+    'https://5e6213046f5c7900149bc94d.mockapi.io/tasks';
 
 
 export const fetchTasksList = () => {
@@ -10,9 +9,7 @@ export const fetchTasksList = () => {
                 return response.json();
             }
         })
-        .then(tasksList => tasksList
-            .map(({ _id, ...rest }) => ({ id: _id, ...rest })))
-}
+};
 
 export const createTask = taskData => {
     return fetch(baseurl, {
@@ -24,7 +21,7 @@ export const createTask = taskData => {
     })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Faaaailed!!!!');
+                throw new Error('Failed to Fetch Data!');
             }
         })
 };
@@ -39,7 +36,7 @@ export const updateTask = (taskId, taskData) => {
     })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Faaaailed to update!!!!');
+                throw new Error('Failed to Update Data!');
             }
         })
 };
@@ -50,8 +47,8 @@ export const deleteTask = taskId => {
     })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Faaaailed to delete!!!!');
+                throw new Error('Failed to Delete Data!');
             }
         })
-}
+};
 

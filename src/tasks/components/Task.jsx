@@ -29,5 +29,4 @@ Task.propTypes = {
     id: PropTypes.string,
     onDeleteTask: PropTypes.func,
     onChangeStatus: PropTypes.func
-
 }

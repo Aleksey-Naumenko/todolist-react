@@ -1,23 +1,15 @@
 import React, { Component } from 'react';
 import TaskInput from './TaskInput';
 import Task from './Task';
-import { createTask, fetchTasksList, updateTask, deleteTask } from './TasksListGateways';
+import { createTask, updateTask, deleteTask } from '../tasksListGateways';
+import {connect} from 'react-redux';
+import { tasksListSelector } from '../tasks.selectors';
+import * as tasksActions from '../tasks.actions';
 
 class TasksList extends Component {
-    state = {
-        tasks: []
-    }
 
     componentDidMount() {
-        this.fetchTasks();
-    }
-
-    fetchTasks = () => {
-        fetchTasksList()
-            .then(taskList =>
-                this.setState({
-                    tasks: taskList,
-                }))
+        this.props.getTasks();
     }
 
     createTaskHandler = text => {
@@ -36,18 +28,18 @@ class TasksList extends Component {
     }
 
     changeStatusHandler = id => {
-        const { done, text } = this.state.tasks.find(task => task.id === id);
+        const { done, text } = this.props.tasks.find(task => task.id === id);
         const updatedTask = {
             text,
             done: !done,
         }
         updateTask(id, updatedTask)
-            .then(() => this.fetchTasks());
+            .then(() => this.props.getTasks());
     }
 
 
     render() {
-        const sortedTasks = this.state.tasks
+        const sortedTasks = this.props.tasks
             .slice()
             .sort((a, b) => a.done - b.done);
 
@@ -67,6 +59,16 @@ class TasksList extends Component {
             </div>
         )
     }
-}
+};
 
-export default TasksList;
+const mapState = state => {
+    return {
+        tasks: tasksListSelector(state),
+    };
+};
+
+const mapDispatch = {
+    getTasks: tasksActions.getTasksList,
+};
+
+export default connect(mapState, mapDispatch)(TasksList);
