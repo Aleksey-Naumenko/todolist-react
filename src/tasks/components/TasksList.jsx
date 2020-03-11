@@ -1,59 +1,29 @@
 import React, { Component } from 'react';
 import TaskInput from './TaskInput';
 import Task from './Task';
-import { createTask, updateTask, deleteTask } from '../tasksListGateways';
-import {connect} from 'react-redux';
-import { tasksListSelector } from '../tasks.selectors';
+import { connect } from 'react-redux';
+import { sortedTasksSelector } from '../tasks.selectors';
 import * as tasksActions from '../tasks.actions';
+import PropTypes from 'prop-types';
 
 class TasksList extends Component {
 
     componentDidMount() {
         this.props.getTasks();
-    }
-
-    createTaskHandler = text => {
-        const newTask = {
-            text,
-            done: false,
-        }
-
-        createTask(newTask)
-            .then(() => this.fetchTasks());
-    }
-
-    deleteTaskHandler = id => {
-        deleteTask(id)
-            .then(() => this.fetchTasks());
-    }
-
-    changeStatusHandler = id => {
-        const { done, text } = this.props.tasks.find(task => task.id === id);
-        const updatedTask = {
-            text,
-            done: !done,
-        }
-        updateTask(id, updatedTask)
-            .then(() => this.props.getTasks());
-    }
-
+    };
 
     render() {
-        const sortedTasks = this.props.tasks
-            .slice()
-            .sort((a, b) => a.done - b.done);
-
         return (
             <div className="todo-list">
                 <TaskInput
-                    onCreateTask={this.createTaskHandler} />
+                    onCreateTask={this.props.createTask} />
                 <ul className="list">
-                    {sortedTasks.map(task =>
+                    {this.props.tasks.map(task =>
                         <Task
                             {...task}
                             key={task.id}
-                            onDeleteTask={this.deleteTaskHandler}
-                            onChangeStatus={this.changeStatusHandler} />
+                            onDeleteTask={this.props.deleteTask}
+                            onChangeStatus={this.props.updateTask} />
                     )}
                 </ul>
             </div>
@@ -61,14 +31,25 @@ class TasksList extends Component {
     }
 };
 
+TasksList.propTypes = {
+    tasks: PropTypes.arrayOf(PropTypes.shape()),
+    getTasks: PropTypes.func,
+    createTask: PropTypes.func,
+    deleteTask: PropTypes.func,
+    updateTask: PropTypes.func,
+};
+
 const mapState = state => {
     return {
-        tasks: tasksListSelector(state),
+        tasks: sortedTasksSelector(state),
     };
 };
 
 const mapDispatch = {
     getTasks: tasksActions.getTasksList,
+    createTask: tasksActions.createTask,
+    deleteTask: tasksActions.deleteTask,
+    updateTask: tasksActions.updateTask,
 };
 
 export default connect(mapState, mapDispatch)(TasksList);
